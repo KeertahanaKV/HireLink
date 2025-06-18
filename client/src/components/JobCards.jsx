@@ -1,7 +1,9 @@
 import React from 'react';
 import { assets } from '../assets/assets';
+import { useNavigate } from "react-router-dom";
 
 const JobCards = ({ job }) => {
+   const navigate=useNavigate()
   return (
     <div className="p-6 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
       {/* Logo */}
@@ -29,10 +31,10 @@ const JobCards = ({ job }) => {
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <button className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition-all">
+        <button onClick={()=>{navigate(`/apply-job/${job._id}`);scrollTo(0,0)}} className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition-all">
           Apply now
         </button>
-        <button className="border border-gray-300 text-sm text-gray-700 px-4 py-2 rounded hover:bg-gray-50">
+        <button onClick={()=>{navigate(`/apply-job/${job._id}`);scrollTo(0,0)}} className="border border-gray-300 text-sm text-gray-700 px-4 py-2 rounded hover:bg-gray-50">
           Learn more
         </button>
       </div>

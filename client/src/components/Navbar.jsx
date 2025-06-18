@@ -1,17 +1,19 @@
 import React from "react";
 import { assets } from "../assets/assets";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
-import { Link } from "react-router-dom"; // ✅ Add this
-
+import { Link, useNavigate } from "react-router-dom"; // ✅ Add this
+import { Navigate } from "react-router-dom";
 const Navbar = () => {
   const { openSignIn } = useClerk();
   const { user } = useUser();
+
+  const  navigate= useNavigate()
 
   return (
     <div className="shadow-md py-4 bg-white">
       <div className="container px-1 2xl:px-20 mx-auto flex justify-between items-center">
         {/* Logo */}
-        <img src={assets.logo} alt="logo" className="h-10 w-auto" />
+        <img onClick={()=>navigate('/')}  src={assets.logo} alt="logo" className="h-10 cursor-pointer w-auto" />
         {user ? (
           <div className="flex items-center gap-3">
             <Link to={"/applications"}>Applied Jobs</Link>
