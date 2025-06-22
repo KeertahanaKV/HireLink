@@ -1,34 +1,83 @@
-// 
-
-import React, { useContext, useState } from 'react';
-import { assets } from '../assets/assets';
-import { AppContext } from '../context/AppContext';
+import React, { useContext, useState } from "react";
+import { assets } from "../assets/assets";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const RecuriteLogin = () => {
-  const { setshowRecuriterLogin } = useContext(AppContext);
-  const [state, setState] = useState('Login'); // 'Login' or 'Signup'
-  const [step, setStep] = useState(1); // 1: text form, 2: image upload
+  const navigate = useNavigate();
+  const { setshowRecuriterLogin, backendUrl, setCompanyData, setCompanyToken } =
+    useContext(AppContext);
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [state, setState] = useState("Login"); // 'Login' or 'Signup'
+  const [step, setStep] = useState(1); // 1: form, 2: logo upload
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [logo, setLogo] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (state === 'Signup') {
+    if (state === "Signup") {
       if (step === 1) {
-        setStep(2); // Go to image upload
+        setStep(2);
         return;
       }
 
-      // Step 2: Final signup logic
-      console.log('Creating account with:', { name, email, password, logo });
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("imageFile", logo);
+
+      try {
+        const { data } = await axios.post(
+          `${backendUrl}/api/company/register`,
+          formData
+        );
+
+        if (data.success) {
+          setCompanyData(data.company);
+          setCompanyToken(data.token);
+          localStorage.setItem("companyToken", data.token);
+          setshowRecuriterLogin(false);
+          navigate("/dashboard");
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        console.error("Signup error:", error.response?.data || error.message);
+        alert("Something went wrong during signup.");
+      }
+
+      return;
     }
 
-    if (state === 'Login') {
-      console.log('Logging in with:', { email, password });
+    // Login flow
+    if (state === "Login") {
+      try {
+        const { data } = await axios.post(`${backendUrl}/api/company/login`, {
+          email,
+          password,
+        });
+
+        if (data.success) {
+          setCompanyData(data.company);
+          setCompanyToken(data.token);
+          localStorage.setItem("companyToken", data.token);
+          setshowRecuriterLogin(false);
+          navigate("/dashboard");
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        console.error("Login error:", error.response?.data || error.message);
+        alert("Something went wrong. Check the console for error logs.");
+      }
     }
   };
 
@@ -47,48 +96,51 @@ const RecuriteLogin = () => {
           &times;
         </button>
 
-        {/* Heading */}
         <h1 className="text-center text-2xl font-semibold text-gray-800">
           Recruiter {state}
         </h1>
         <p className="text-center text-gray-500 text-sm">
-          {state === 'Login'
-            ? 'Welcome back! Please sign in to continue.'
+          {state === "Login"
+            ? "Welcome back! Please sign in to continue."
             : step === 1
-            ? 'Create your recruiter account'
-            : 'Upload your company logo'}
+            ? "Create your recruiter account"
+            : "Upload your company logo"}
         </p>
 
-        {/* Form Inputs */}
-        {state === 'Login' && (
+        {/* Login Fields */}
+        {state === "Login" && (
           <>
-            {/* Email */}
             <div className="border px-4 py-2 flex items-center gap-3 rounded-lg">
               <img src={assets.email_icon} alt="" className="w-5 h-5" />
               <input
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
                 type="email"
                 placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full outline-none text-sm"
               />
             </div>
 
-            {/* Password */}
-            <div className="border px-4 py-2 flex items-center gap-3 rounded-lg">
+            <div className="border px-4 py-2 flex items-center gap-3 rounded-lg relative">
               <img src={assets.lock_icon} alt="" className="w-5 h-5" />
               <input
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full outline-none text-sm"
+                className="w-full outline-none text-sm pr-10"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 text-gray-500"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
 
-            {/* Forgot Password */}
             <p className="text-right text-sm text-blue-600 hover:underline cursor-pointer">
               Forgot Password?
             </p>
@@ -96,15 +148,15 @@ const RecuriteLogin = () => {
         )}
 
         {/* Signup Step 1 */}
-        {state === 'Signup' && step === 1 && (
+        {state === "Signup" && step === 1 && (
           <>
             <div className="border px-4 py-2 flex items-center gap-3 rounded-lg">
               <img src={assets.person_icon} alt="" className="w-5 h-5" />
               <input
-                onChange={(e) => setName(e.target.value)}
-                value={name}
                 type="text"
                 placeholder="Company Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
                 className="w-full outline-none text-sm"
               />
@@ -112,36 +164,43 @@ const RecuriteLogin = () => {
             <div className="border px-4 py-2 flex items-center gap-3 rounded-lg">
               <img src={assets.email_icon} alt="" className="w-5 h-5" />
               <input
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
                 type="email"
                 placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full outline-none text-sm"
               />
             </div>
-            <div className="border px-4 py-2 flex items-center gap-3 rounded-lg">
+            <div className="border px-4 py-2 flex items-center gap-3 rounded-lg relative">
               <img src={assets.lock_icon} alt="" className="w-5 h-5" />
               <input
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full outline-none text-sm"
+                className="w-full outline-none text-sm pr-10"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 text-gray-500"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
           </>
         )}
 
-        {/* Signup Step 2: Upload Logo */}
-        {state === 'Signup' && step === 2 && (
+        {/* Signup Step 2 */}
+        {state === "Signup" && step === 2 && (
           <div className="border-dashed border-2 border-blue-300 p-6 rounded-lg text-center">
             <label
               htmlFor="logo-upload"
               className="cursor-pointer text-blue-600 hover:underline"
             >
-              {logo ? logo.name : 'Click to Upload Company Logo'}
+              {logo ? logo.name : "Click to Upload Company Logo"}
             </label>
             <input
               type="file"
@@ -154,28 +213,26 @@ const RecuriteLogin = () => {
           </div>
         )}
 
-        {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition cursor-pointer"
         >
-          {state === 'Login' ? 'Login' : step === 1 ? 'Next' : 'Create Account'}
+          {state === "Login" ? "Login" : step === 1 ? "Next" : "Create Account"}
         </button>
 
-        {/* Switch between Login & Signup */}
         <p className="text-center text-sm text-gray-500">
-          {state === 'Login'
+          {state === "Login"
             ? "Don't have an account?"
-            : 'Already have an account?'}{' '}
+            : "Already have an account?"}{" "}
           <button
             type="button"
             onClick={() => {
-              setState(state === 'Login' ? 'Signup' : 'Login');
-              setStep(1); // Reset step if switching
+              setState(state === "Login" ? "Signup" : "Login");
+              setStep(1);
             }}
             className="text-blue-600 font-medium hover:underline"
           >
-            {state === 'Login' ? 'Create One' : 'Login'}
+            {state === "Login" ? "Create One" : "Login"}
           </button>
         </p>
       </form>
