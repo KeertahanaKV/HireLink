@@ -4,6 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import generateToken from "../utils/generateToken.js";
 import Job from "../models/Job.js";
+import JobApplication from "../models/JobApplication.js";
 //  Register a new company
 export const registerCompany = async (req, res) => {
   const { name, email, password } = req.body;
@@ -140,9 +141,56 @@ export const postJob = async (req, res) => {
 export const getCompanyJobApplicants = async (req, res) => {};
 
 //Get Company Posted Jobs
-export const getCompanyPostedJobs = async (req, res) => {};
+
+export const getCompanyPostedJobs = async (req, res) => {
+  try {
+    const companyId = req.company._id; // from protectCompany middleware
+
+    const jobs = await Job.find({ companyId });
+
+    // Adding number of applicants to each job
+    const jobsData = await Promise.all(
+      jobs.map(async (job) => {
+        const applicants = await JobApplication.find({ jobId: job._id });
+        return { ...job.toObject(), applicants: applicants.length };
+      })
+    );
+
+    
+    res.json({ success: true, jobsData });
+
+  } catch (error) {
+    console.log("Error in getCompanyPostedJobs:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 
 //Change Job Applications Status
 export const ChangeJobApplicationsStatus = async (req, res) => {};
+
+
 //Change job visibility
-export const changeVisibility = async (req, res) => {};
+export const changeVisibility = async (req, res) => {
+  const { jobId } = req.body;
+
+  try {
+    // Find the job and make sure it belongs to the logged-in company
+    const job = await Job.findOne({ _id: jobId, companyId: req.company._id });
+
+    if (!job) {
+      return res.json({ success: false, message: "Job not found or unauthorized" });
+    }
+
+    // Toggle visibility
+    job.visible = !job.visible;
+
+    await job.save();
+
+    res.json({ success: true, message: "Job visibility updated", visible: job.visible });
+  } catch (error) {
+    console.log("Error in changeVisibility:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
