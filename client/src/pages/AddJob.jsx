@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
-import { JobCategories, JobLocations } from "../assets/assets";
+import { JobCategories } from "../assets/assets";
 import indianCities from "../data/indian_cities.json";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
@@ -13,11 +13,16 @@ const AddJob = () => {
   const [category, setCategory] = useState("Programming");
   const [level, setLevel] = useState("Beginner Level");
   const [salary, setSalary] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ MISSING EARLIER
   const editorRef = useRef(null);
   const quillref = useRef(null);
   const { backendUrl, companyToken } = useContext(AppContext);
+
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     try {
       const description = quillref.current.root.innerHTML;
@@ -27,8 +32,9 @@ const AddJob = () => {
         { title, description, location, salary, category, level },
         { headers: { token: companyToken } }
       );
+
       if (data.success) {
-        toast.success(data.message);
+        toast.success("Job posted successfully!");
         setTitle("");
         setSalary("");
         setLocation("");
@@ -39,7 +45,9 @@ const AddJob = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setIsSubmitting(false); // ✅ Reset button after request completes
     }
   };
 
@@ -53,7 +61,7 @@ const AddJob = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-md space-y-6">
-      <form onSubmit={onSubmitHandler} action="" className="space-y-6">
+      <form onSubmit={onSubmitHandler} className="space-y-6">
         <div>
           <label className="block font-semibold mb-1">Job Title</label>
           <input
@@ -110,9 +118,9 @@ const AddJob = () => {
               onChange={(e) => setLevel(e.target.value)}
               className="w-full border border-gray-300 p-2 rounded-lg"
             >
-              <option value="Beginner">Beginner Level</option>
-              <option value="Intermediate">Intermediate Level</option>
-              <option value="Senior">Senior Level</option>
+              <option value="Beginner Level">Beginner Level</option>
+              <option value="Intermediate Level">Intermediate Level</option>
+              <option value="Senior Level">Senior Level</option>
             </select>
           </div>
         </div>
@@ -130,9 +138,12 @@ const AddJob = () => {
 
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+          disabled={isSubmitting}
+          className={`bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg ${
+            isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+          }`}
         >
-          Add Job
+          {isSubmitting ? "Posting..." : "Add Job"}
         </button>
       </form>
     </div>

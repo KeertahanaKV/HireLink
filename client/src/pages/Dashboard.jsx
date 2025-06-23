@@ -18,11 +18,13 @@ const Dashboard = () => {
     toast.success("Logged out successfully");
     navigate("/");
   };
-  useEffect(()=>{
-     if(companyData){
-        navigate('/dashboard/manage-jobs')
-     }
-  },[companyData])
+
+  useEffect(() => {
+    if (companyData) {
+      navigate("/dashboard/manage-jobs");
+    }
+  }, [companyData]);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Top Navbar */}
@@ -50,8 +52,17 @@ const Dashboard = () => {
               />
 
               {showDropdown && (
-                <div className="absolute right-0 mt-2 bg-white shadow border rounded-lg z-50 min-w-[120px]">
+                <div className="absolute right-0 mt-2 bg-white shadow border rounded-lg z-50 min-w-[140px]">
                   <ul className="text-sm text-blue-600 font-semibold">
+                    <li
+                      className="px-4 py-2 hover:bg-blue-50 cursor-pointer"
+                      onClick={() => {
+                        setShowDropdown(false);
+                        navigate("/dashboard/edit-profile");
+                      }}
+                    >
+                      Edit Profile
+                    </li>
                     <li
                       className="px-4 py-2 hover:bg-blue-50 cursor-pointer"
                       onClick={handleLogout}

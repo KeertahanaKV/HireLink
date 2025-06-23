@@ -8,7 +8,7 @@ const JobCards = ({ job }) => {
     <div className="p-6 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
       {/* Logo */}
       <div className="mb-4">
-        <img src={assets.company_icon} alt="Company Logo" className="w-8 h-8" />
+        <img src={job.companyId.image} alt="Company Logo" className="w-8 h-8" />
       </div>
 
       {/* Job Title */}

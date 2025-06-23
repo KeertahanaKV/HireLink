@@ -1,12 +1,39 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Navbar from "../components/Navbar";
 import { assets, jobsApplied } from "../assets/assets";
 import moment from "moment";
+import { AppContext } from "../context/AppContext";
+import { useAuth, useUser } from "@clerk/clerk-react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Applications = () => {
+  const {user} =useUser()
+  const {getToken} =useAuth()
   const [isEdit, setIsEdit] = useState(false);
   const [resume, setResume] = useState(null);
-
+ const{backendUrl,userData,userApplications,fectchUserData}=useContext(AppContext)
+ const updateResume =async()=>{
+      try {
+        const formData=new FormData()
+        formData.append('resume',resume)
+        const token =await getToken()
+        const {data} =await axios.post(`${backendUrl}/api/users/update-resume`,
+          formData,
+          {headers:{Authorization:`Bearer ${token}`}}
+        )
+        if(data.success){
+          toast.success(data.message)
+          await fectchUserData()
+        }else{
+           toast.error(data.message)
+        }
+      } catch (error) {
+        toast.error(error.message )
+      }
+      setIsEdit(false)
+      setResume(null)
+ } 
   return (
     <div>
       <Navbar />
@@ -15,13 +42,13 @@ const Applications = () => {
 
         {/* Resume Upload Section */}
         <div className="flex flex-wrap gap-4 items-center mb-10">
-          {isEdit ? (
+          {isEdit || userData && userData.resume===""? (
             <>
               <label
                 className="flex items-center gap-3 bg-blue-50 border border-blue-300 rounded-lg px-4 py-2 cursor-pointer hover:bg-blue-100"
                 htmlFor="resumeupload"
               >
-                <p className="text-blue-700 font-medium">Select Resume</p>
+                <p className="text-blue-700 font-medium">{resume?resume.name:"Select Resume"}</p>
                 <input
                   id="resumeupload"
                   onChange={(e) => setResume(e.target.files[0])}
@@ -32,7 +59,7 @@ const Applications = () => {
                 <img src={assets.profile_upload_icon} alt="upload-icon" className="w-5 h-5" />
               </label>
               <button
-                onClick={(e) => setIsEdit(false)}
+                onClick={updateResume}
                 className="bg-green-100 text-green-700 border border-green-400 rounded-lg px-4 py-2 hover:bg-green-200"
               >
                 Save

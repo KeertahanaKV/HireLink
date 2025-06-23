@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import AddJob from "./pages/AddJob";
 import ManageJobs from "./pages/ManageJobs";
 import ViewsApllication from "./pages/ViewsApllication";
+import EditProfile from "./pages/EditProfile";
 import { ToastContainer, toast } from "react-toastify";
 
 const App = () => {
@@ -26,6 +27,7 @@ const App = () => {
               <Route path="add-job" element={<AddJob />} />
               <Route path="manage-jobs" element={<ManageJobs />} />
               <Route path="view-applications" element={<ViewsApllication />} />
+              <Route path="/dashboard/edit-profile" element={<EditProfile />} />
         </Route>
       </Routes>
     </div>

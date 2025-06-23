@@ -79,6 +79,7 @@ export const JobCategories = [
     "Networking",
     "Management",
     "Marketing",
+    "Software",
     "Cybersecurity",
 ]
 
