@@ -1,38 +1,59 @@
-**🚀 HireLink — Job Board Platform**
-HireLink is a modern and intuitive job board platform that connects recruiters with top job seekers.
-Recruiters can easily post job listings, manage applicants, and track applications — while job seekers can browse opportunities, apply, and monitor their application status — all in one seamless experience.
+💼 HireLink – Modern Job Board Platform
+---
+HireLink is a modern and intuitive job board platform that connects recruiters with  job seekers.
+Recruiters can post jobs, manage applicants, and update statuses — while job seekers can explore jobs, apply with resumes, and track application status — all in one seamless experience.
+---
+🎯 Core Features
+👤 Job Seeker Dashboard
+Everything a job seeker needs to find the right opportunity.
 
-**🛠 Tech Stack**
-React	- Frontend UI,
-Tailwind CSS -	Modern styling framework,
-Node.js	- Backend runtime environment,
-Express.js -	REST API server,
-MongoDB	- database,
-JWT	Secure - token-based authentication,
-bcryptjs	- Password hashing,
-Cloudinary	-Resume & image file uploads,
-React Toastify	-User notifications & alerts.
+Features:
 
-**🔐 Authentication**
-👤 Job Seekers
-🔑 Register/Login using email & password
+🔍 Search jobs by title and location
 
-🔐 JWT-based secure authentication
+📄 Upload resume during application
 
-📄 Resume upload via Cloudinary
+📊 Track application status (Pending / Accepted / Rejected)
+
+📁 View all applied jobs in one place
+
+🏢 Recruiter Dashboard
+---
+Empower companies to find and manage top talent with ease.
+
+Features:
+
+📌 Post new job listings
+
+👥 View applicants per job
+
+🔄 Update application status
+
+👁️‍🗨️ Toggle job visibility (Publish or Hide)
+
+🖼️ Upload company logo during registration
+
+🔐 Authentication System
+ Job Seekers
+ ---
+Email & password-based login
+
+JWT token authentication
+
+Resume upload via Cloudinary
+
+** Recruiters**
+---
+Register/login with company details
+
+Logo upload via Cloudinary
+
+Secure token stored in localStorage
 
 
-
-**🏢 Recruiters**
-   📝 Register/Login with company logo
-
-   🔒 JWT token stored in localStorage
-
-   📂 Full access to applicant data per job
-
-✨ Key Features
-**  For Job Seekers**
-      🔍 Explore & search jobs by title and location
+For Job Seekers
+---
+🔍 Explore & search jobs by title and location
 
 📄 Apply to jobs with resume upload
 
@@ -41,14 +62,14 @@ React Toastify	-User notifications & alerts.
 
 📁 View all applied jobs in one place
 
-** For Recruiters**
-📌 Post new job listings
 
-👥 View applicants per job with resume access
 
-🔄 Change application status:
-→ Pending / Accepted / Rejected
-
-👁️‍🗨️ Toggle job visibility (Publish or Hide)
-
-🔐 Secure login with image/logo upload
+**🛠️ Tech Stack**
+---
+Frontend	React.js + Tailwind CSS
+Backend	Node.js + Express.js
+Database	MongoDB
+Auth	JWT (JSON Web Token)
+Passwords	bcrypt.js
+File Upload	Cloudinary (image/resume)
+Alerts	React Toastify
